@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Success</title>
+<link rel="stylesheet" href="/static/css/auth.css">
+<style>
+.success {
+    text-align: center;
+    font-size: 26px;
+    animation: pop 0.6s ease;
+}
+@keyframes pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+</style>
+</head>
+<body>
+
+<div class="card success">
+    <h2>{{ message }}</h2>
+    <p>Redirecting...</p>
+</div>
+
+<script>
+setTimeout(() => {
+    window.location.href = "/";
+}, 1500);
+</script>
+
+</body>
+</html>

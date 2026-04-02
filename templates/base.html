@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title or "SecureMail AI" }}</title>
+
+<style>
+
+/* ===== GLOBAL ===== */
+
+body{
+margin:0;
+font-family:"Segoe UI",sans-serif;
+background:linear-gradient(120deg,#020617,#020b1f,#020617);
+color:white;
+min-height:100vh;
+}
+
+/* ===== NAVBAR ===== */
+
+.navbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px 40px;
+background:rgba(2,6,23,0.85);
+backdrop-filter:blur(15px);
+border-bottom:1px solid rgba(56,189,248,0.2);
+box-shadow:0 5px 25px rgba(0,0,0,0.5);
+}
+
+/* LOGO */
+
+.logo{
+font-size:20px;
+font-weight:600;
+background:linear-gradient(90deg,#38bdf8,#22c55e);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+/* LEFT MENU */
+
+.nav-left{
+display:flex;
+align-items:center;
+gap:30px;
+}
+
+.nav-left a{
+color:#cbd5e1;
+text-decoration:none;
+font-weight:500;
+transition:0.3s;
+}
+
+.nav-left a:hover{
+color:#38bdf8;
+}
+
+/* RIGHT MENU */
+
+.nav-right{
+display:flex;
+align-items:center;
+gap:20px;
+}
+
+/* LANGUAGE SELECT */
+
+.language-select{
+background:#020617;
+color:white;
+border:1px solid #38bdf8;
+padding:7px 12px;
+border-radius:8px;
+cursor:pointer;
+font-size:14px;
+}
+
+/* BUTTON */
+
+.btn{
+padding:8px 18px;
+background:linear-gradient(90deg,#38bdf8,#22c55e);
+border-radius:20px;
+text-decoration:none;
+color:white;
+font-size:14px;
+}
+
+/* MOBILE MENU BUTTON */
+
+.menu-toggle{
+display:none;
+font-size:22px;
+cursor:pointer;
+color:#38bdf8;
+}
+
+/* CONTENT */
+
+.container{
+padding:40px;
+max-width:1400px;
+margin:auto;
+}
+
+/* FOOTER */
+
+.footer{
+text-align:center;
+padding:20px;
+color:#94a3b8;
+border-top:1px solid rgba(255,255,255,0.05);
+margin-top:40px;
+}
+
+/* GLOW EFFECT */
+
+.glow{
+position:fixed;
+top:-200px;
+left:-200px;
+width:600px;
+height:600px;
+background:radial-gradient(circle,#38bdf820,transparent);
+z-index:-1;
+}
+
+.glow2{
+position:fixed;
+bottom:-200px;
+right:-200px;
+width:600px;
+height:600px;
+background:radial-gradient(circle,#22c55e20,transparent);
+z-index:-1;
+}
+
+/* ================= NAVBAR MOBILE FIX ================= */
+
+@media (max-width: 900px){
+
+.navbar{
+flex-direction:column;
+align-items:flex-start;
+padding:15px 20px;
+}
+
+.menu-toggle{
+display:block;
+margin-bottom:10px;
+}
+
+/* Left Menu */
+
+.nav-left{
+flex-direction:column;
+align-items:flex-start;
+gap:12px;
+width:100%;
+display:none;
+}
+
+.nav-left.active{
+display:flex;
+}
+
+/* Links */
+
+.nav-left a{
+font-size:14px;
+}
+
+/* Right Menu */
+
+.nav-right{
+width:100%;
+justify-content:space-between;
+margin-top:10px;
+}
+
+/* Logo */
+
+.logo{
+font-size:18px;
+margin-bottom:5px;
+}
+
+/* Container */
+
+.container{
+padding:20px;
+}
+
+}
+
+
+/* Small Mobile */
+
+@media (max-width:600px){
+
+.nav-left{
+gap:8px;
+}
+
+.nav-right{
+flex-direction:column;
+align-items:flex-start;
+gap:8px;
+}
+
+.language-select{
+width:100%;
+}
+
+.btn{
+width:100%;
+text-align:center;
+}
+
+.container{
+padding:15px;
+}
+
+}
+
+/* ===== AUTO EMAIL MOBILE FIX ===== */
+
+@media (max-width:768px){
+
+.header{
+flex-direction:column;
+align-items:flex-start;
+gap:10px;
+}
+
+.refresh{
+width:100%;
+}
+
+.switch-btn{
+width:100%;
+margin-top:8px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="glow"></div>
+<div class="glow2"></div>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<div class="menu-toggle" onclick="toggleMenu()">☰</div>
+
+<div class="nav-left">
+
+<div class="logo">🔐 SecureMail AI</div>
+
+<a href="/">Home</a>
+<a href="/email">Email Spam Check</a>
+<a href="/auto-email">Auto Email Detection</a>
+<a href="/url">URL Safety Check</a>
+
+</div>
+
+<div class="nav-right">
+
+<select class="language-select" onchange="changeLanguage(this)">
+<option value="">🌍 Language</option>
+
+<option value="en">English</option>
+<option value="hi">Hindi</option>
+<option value="te">Telugu</option>
+<option value="ta">Tamil</option>
+<option value="bn">Bengali</option>
+<option value="ml">Malayalam</option>
+<option value="kn">Kannada</option>
+<option value="mr">Marathi</option>
+<option value="gu">Gujarati</option>
+
+</select>
+
+{% if session.get("user") %}
+<a href="/logout" class="btn">Logout</a>
+{% else %}
+<a href="/login" class="btn">Login</a>
+{% endif %}
+
+</div>
+
+</div>
+
+<div class="container">
+{% block content %}{% endblock %}
+</div>
+
+<div class="footer">
+🔐 AI Powered Email Security Scanner | Final Year Project
+</div>
+
+<div id="google_translate_element" style="display:none"></div>
+
+<script>
+
+function toggleMenu(){
+document.querySelector(".nav-left").classList.toggle("active")
+}
+
+function googleTranslateElementInit() {
+new google.translate.TranslateElement({
+pageLanguage: 'en',
+autoDisplay:false
+}, 'google_translate_element');
+}
+
+function changeLanguage(select){
+var lang = select.value
+var combo = document.querySelector(".goog-te-combo")
+if(combo){
+combo.value = lang
+combo.dispatchEvent(new Event("change"))
+}
+}
+
+</script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>

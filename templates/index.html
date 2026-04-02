@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/auth.css">
+</head>
+<body>
+
+<div class="card">
+    <h2>Login</h2>
+
+    <form method="post">
+        <input name="username" placeholder="Username" required>
+
+        <div class="field">
+            <input type="password" id="pwd" name="password" placeholder="Password" required>
+            <span class="eye" onclick="toggle()">👁</span>
+        </div>
+
+        <!-- ✅ FIXED remember me -->
+        <div class="remember">
+            <input type="checkbox" name="remember">
+            <label>Remember me</label>
+        </div>
+
+        <button type="submit">Login</button>
+    </form>
+
+    {% if error %}
+        <p style="color:#ffb3b3">{{ error }}</p>
+    {% endif %}
+
+    <p>No account? <a href="/register">Register</a></p>
+</div>
+
+<script>
+function toggle() {
+    const p = document.getElementById("pwd");
+    p.type = p.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

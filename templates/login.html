@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Secure Login</title>
+
+<style>
+/* ================= RESET ================= */
+*{
+    box-sizing:border-box;
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+body{
+    margin:0;
+    height:100vh;
+    overflow:hidden;
+    background:#000;
+}
+
+/* ================= MATRIX BACKGROUND ================= */
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:-1;
+}
+
+/* ================= LOGIN CARD ================= */
+.card{
+    width:380px;
+    padding:35px;
+    border-radius:18px;
+    background:rgba(0,0,0,0.65);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 0 40px rgba(0,255,255,0.35);
+    color:#fff;
+
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+/* ================= TITLE ================= */
+.card h2{
+    text-align:center;
+    margin-bottom:25px;
+    font-size:26px;
+    letter-spacing:3px;
+    color:#00f0ff;
+    text-shadow:0 0 15px #00f0ff;
+    min-height:32px;
+}
+
+/* ================= INPUT ================= */
+input[type="text"],
+input[type="password"]{
+    width:100%;
+    padding:13px 15px;
+    margin-bottom:15px;
+    border-radius:10px;
+    border:none;
+    outline:none;
+    background:#0b0b0b;
+    color:#fff;
+    font-size:15px;
+    box-shadow:0 0 0 1px rgba(0,255,255,0.4);
+}
+
+input:focus{
+    box-shadow:0 0 10px rgba(0,255,255,0.8);
+}
+
+/* ================= CAPTCHA ================= */
+.captcha-box{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.captcha{
+    padding:8px 14px;
+    background:#000;
+    border-radius:8px;
+    letter-spacing:3px;
+    font-weight:bold;
+    color:#00f0ff;
+    box-shadow:0 0 10px rgba(0,255,255,0.6);
+}
+
+/* ================= REMEMBER ME ================= */
+.remember{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:20px;
+}
+
+.remember input{
+    width:16px;
+    height:16px;
+    cursor:pointer;
+}
+
+.remember label{
+    font-size:14px;
+}
+
+/* ================= BUTTON ================= */
+button{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:none;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    color:#000;
+    background:linear-gradient(135deg,#00f0ff,#00b4ff);
+    transition:0.3s ease;
+}
+
+button:hover{
+    box-shadow:0 0 20px rgba(0,255,255,0.9);
+    transform:translateY(-2px);
+}
+
+/* ================= LINKS ================= */
+p{
+    text-align:center;
+    margin-top:15px;
+    font-size:14px;
+}
+
+a{
+    color:#00f0ff;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+/* ================= ERROR ================= */
+.error{
+    color:#ff4d4d;
+    text-align:center;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- MATRIX CANVAS -->
+<canvas id="matrix"></canvas>
+
+<!-- LOGIN CARD -->
+<div class="card {% if shake %}shake{% endif %}">
+    <h2 id="cyberTitle"></h2>
+
+    <form method="post">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+
+        <div class="captcha-box">
+            <div class="captcha">{{ captcha }}</div>
+            <input type="text" name="captcha" placeholder="Enter Captcha" required>
+        </div>
+
+        <div class="remember">
+            <input type="checkbox" id="remember" name="remember">
+            <label for="remember">Remember me</label>
+        </div>
+
+        <button type="submit">LOGIN</button>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <p>No account? <a href="/register">Register</a></p>
+    </form>
+</div>
+
+<!-- ================= MATRIX SCRIPT ================= -->
+<script>
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = [];
+
+for(let i=0;i<columns;i++){
+    drops[i] = 1;
+}
+
+function drawMatrix(){
+    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "#00ffcc";
+    ctx.font = fontSize + "px monospace";
+
+    for(let i=0;i<drops.length;i++){
+        const text = letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+
+        if(drops[i]*fontSize > canvas.height && Math.random()>0.975){
+            drops[i]=0;
+        }
+        drops[i]++;
+    }
+}
+
+setInterval(drawMatrix,35);
+
+/* ================= CYBER TYPING TITLE ================= */
+const titleText = "SECURE LOGIN";
+const title = document.getElementById("cyberTitle");
+let index = 0;
+
+function typeEffect(){
+    if(index < titleText.length){
+        title.innerHTML += titleText.charAt(index);
+        index++;
+        setTimeout(typeEffect,120);
+    }
+}
+typeEffect();
+</script>
+
+</body>
+</html>

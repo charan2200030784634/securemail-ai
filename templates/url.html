@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+/* ===== WRAPPER ===== */
+.url-wrapper{
+    max-width:800px;
+    margin:auto;
+}
+
+/* ===== GLASS CARD ===== */
+.url-card{
+    background:rgba(30,41,59,0.85);
+    padding:40px;
+    border-radius:20px;
+    border:1px solid rgba(255,255,255,0.08);
+    box-shadow:0 0 60px rgba(56,189,248,0.15);
+}
+
+/* ===== TITLE ===== */
+.url-card h2{
+    font-size:26px;
+    margin-bottom:25px;
+    color:#38bdf8;
+}
+
+/* ===== INPUT ===== */
+.url-card input{
+    width:100%;
+    padding:14px 18px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.1);
+    background:#0f172a;
+    color:white;
+    font-size:15px;
+    outline:none;
+    margin-bottom:20px;
+}
+
+.url-card input:focus{
+    border:1px solid #38bdf8;
+    box-shadow:0 0 10px rgba(56,189,248,0.6);
+}
+
+/* ===== BUTTON ===== */
+.url-card button{
+    padding:14px 30px;
+    border:none;
+    border-radius:30px;
+    font-weight:bold;
+    background:linear-gradient(135deg,#3b82f6,#2563eb);
+    color:white;
+    cursor:pointer;
+    transition:0.3s ease;
+}
+
+.url-card button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 25px rgba(59,130,246,0.4);
+}
+
+/* ===== RESULT ===== */
+.result-box{
+    margin-top:30px;
+    padding:25px;
+    border-radius:16px;
+    background:#0f172a;
+    border:1px solid rgba(255,255,255,0.08);
+}
+
+/* Result text */
+.safe{
+    color:#22c55e;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.suspicious{
+    color:#ef4444;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.badge{
+    display:inline-block;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    margin-top:10px;
+}
+
+.badge-safe{
+    background:rgba(34,197,94,0.15);
+    color:#22c55e;
+}
+
+.badge-danger{
+    background:rgba(239,68,68,0.15);
+    color:#ef4444;
+}
+
+/* Reasons */
+
+.reason{
+margin-top:15px;
+padding:10px;
+background:#020617;
+border-radius:10px;
+border:1px solid #1e293b;
+font-size:14px;
+}
+
+</style>
+
+<div class="url-wrapper">
+
+    <div class="url-card">
+        <h2>🔗 URL Safety Checker</h2>
+
+        <form method="post">
+            <input type="text" name="url"
+                   placeholder="Paste suspicious URL here (example: https://fake-paytm.xyz/login)"
+                   required>
+
+            <button type="submit">Check URL</button>
+        </form>
+
+        {% if result %}
+        <div class="result-box">
+
+            {% if result.safe %}
+                <div class="safe">Result: SAFE</div>
+                <div class="badge badge-safe">
+                    This domain appears legitimate
+                </div>
+            {% else %}
+                <div class="suspicious">Result: SUSPICIOUS</div>
+                <div class="badge badge-danger">
+                    Warning: This URL may be phishing or malicious
+                </div>
+            {% endif %}
+
+            <!-- URL -->
+            <div class="reason">
+                <strong>URL:</strong> {{ result.url }}
+            </div>
+
+            <!-- Reasons -->
+            {% for reason in result.reasons %}
+            <div class="reason">
+                {{ reason }}
+            </div>
+            {% endfor %}
+
+        </div>
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}

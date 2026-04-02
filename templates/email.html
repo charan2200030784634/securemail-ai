@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+/* ===== WRAPPER ===== */
+.email-wrapper{
+max-width:900px;
+margin:auto;
+}
+
+/* ===== GLASS CARD ===== */
+.email-card{
+background:rgba(30,41,59,0.85);
+padding:40px;
+border-radius:20px;
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:0 0 50px rgba(56,189,248,0.15);
+}
+
+/* ===== TITLE ===== */
+.email-card h2{
+margin-bottom:25px;
+font-size:28px;
+color:#38bdf8;
+}
+
+/* ===== INPUT ===== */
+input, textarea{
+width:100%;
+padding:14px 16px;
+margin-bottom:20px;
+border-radius:12px;
+border:1px solid rgba(255,255,255,0.1);
+background:#0f172a;
+color:white;
+font-size:15px;
+outline:none;
+}
+
+input:focus, textarea:focus{
+border:1px solid #38bdf8;
+box-shadow:0 0 10px rgba(56,189,248,0.5);
+}
+
+/* ===== BUTTON ===== */
+.btn-group{
+display:flex;
+gap:15px;
+}
+
+button{
+padding:14px 30px;
+border:none;
+border-radius:30px;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.analyze-btn{
+background:linear-gradient(135deg,#22c55e,#16a34a);
+color:#02140a;
+}
+
+.clear-btn{
+background:#ef4444;
+color:white;
+}
+
+button:hover{
+transform:translateY(-3px);
+}
+
+/* ===== RESULT BOX ===== */
+.result-box{
+margin-top:30px;
+padding:25px;
+border-radius:16px;
+background:#0f172a;
+border:1px solid rgba(255,255,255,0.08);
+}
+
+/* ===== CIRCLE CHART ===== */
+.circle{
+width:150px;
+height:150px;
+border-radius:50%;
+margin:auto;
+background:conic-gradient(
+#ef4444 {{confidence}}%,
+#1e293b {{confidence}}%
+);
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.circle-inner{
+width:110px;
+height:110px;
+background:#0f172a;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+font-weight:bold;
+}
+
+/* ===== RESULT ===== */
+.result-text{
+text-align:center;
+font-size:20px;
+margin-top:15px;
+}
+
+.spam{
+color:#ef4444;
+}
+
+.notspam{
+color:#22c55e;
+}
+
+/* ===== LIST ===== */
+.spam-list{
+margin-top:20px;
+padding:15px;
+background:#1e293b;
+border-radius:10px;
+}
+
+.spam-list ul{
+padding-left:20px;
+}
+
+.highlight-box{
+margin-top:20px;
+padding:20px;
+border-radius:12px;
+background:#1e293b;
+}
+
+</style>
+
+<div class="email-wrapper">
+
+<div class="email-card">
+<h2>Email Spam & Fake Mail Detection</h2>
+
+<form method="post">
+
+<input type="text" name="sender"
+value="{{ request.form.sender }}"
+placeholder="Sender Email (optional)">
+
+<textarea id="emailText"
+name="email_text"
+rows="8"
+placeholder="Paste email content here..."
+required>{{ request.form.email_text }}</textarea>
+
+<div class="btn-group">
+<button class="analyze-btn" type="submit">Analyze Email</button>
+<button type="button" class="clear-btn" onclick="clearText()">Clear</button>
+</div>
+
+</form>
+
+{% if result %}
+<div class="result-box">
+
+<div class="circle">
+<div class="circle-inner">
+{{ confidence }}%
+</div>
+</div>
+
+<div class="result-text {{ 'spam' if result=='SPAM' else 'notspam' }}">
+Result : {{ result }}
+</div>
+
+{% if explanations %}
+<div class="spam-list">
+<h3>Spam Detection Details</h3>
+<ul>
+{% for item in explanations %}
+<li>{{ item }}</li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
+
+{% if highlighted_email %}
+<div class="highlight-box">
+{{ highlighted_email|safe }}
+</div>
+{% endif %}
+
+</div>
+{% endif %}
+
+</div>
+</div>
+
+<script>
+
+function clearText(){
+document.getElementById("emailText").value=""
+}
+
+</script>
+
+{% endblock %}

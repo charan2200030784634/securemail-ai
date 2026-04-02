@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Create Account</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",Arial,sans-serif;
+}
+
+body{
+    height:100vh;
+    background:black;
+    overflow:hidden;
+}
+
+canvas{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+}
+
+/* ===== CARD ===== */
+.register-card{
+    width:380px;
+    padding:35px;
+    border-radius:20px;
+    background:rgba(10,20,30,0.65);
+    backdrop-filter:blur(20px);
+    box-shadow:0 0 40px rgba(0,255,255,0.25);
+    color:#fff;
+
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+/* ===== TITLE ===== */
+.register-card h2{
+    text-align:center;
+    margin-bottom:25px;
+    font-size:24px;
+    letter-spacing:2px;
+    color:#00f0ff;
+    text-shadow:0 0 15px #00f0ff;
+    min-height:30px;
+}
+
+/* ===== INPUT ===== */
+.register-card input{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:none;
+    outline:none;
+    border-radius:12px;
+    background:#020617;
+    color:#00f0ff;
+    box-shadow:0 0 0 1px rgba(0,255,255,0.3);
+}
+
+.register-card input::placeholder{
+    color:#7dd3fc;
+}
+
+.register-card input:focus{
+    box-shadow:0 0 0 2px #00f0ff;
+}
+
+/* ===== BUTTON ===== */
+button{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(135deg,#00f0ff,#2563eb);
+    color:#000;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 0 25px #00f0ff;
+}
+
+/* ===== FOOTER ===== */
+.footer{
+    text-align:center;
+    margin-top:18px;
+    font-size:14px;
+}
+
+.footer a{
+    color:#22d3ee;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.footer a:hover{
+    text-decoration:underline;
+}
+
+/* ===== BLINK ===== */
+@keyframes blink {
+    50% { opacity:0; }
+}
+.cursor{
+    animation:blink 1s infinite;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="register-card">
+    <h2 id="cyberTitle"></h2>
+
+    <form method="post">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">CREATE ACCOUNT</button>
+    </form>
+
+    <div class="footer">
+        Already user? <a href="/login">Login</a>
+    </div>
+</div>
+
+<script>
+/* ===== MATRIX BACKGROUND ===== */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%";
+const fontSize = 14;
+const columns = canvas.width / fontSize;
+const drops = Array(Math.floor(columns)).fill(1);
+
+function drawMatrix(){
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "#00f0ff";
+    ctx.font = fontSize + "px monospace";
+
+    for(let i=0;i<drops.length;i++){
+        const text = letters.charAt(Math.floor(Math.random()*letters.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+
+        if(drops[i]*fontSize > canvas.height && Math.random() > 0.975){
+            drops[i]=0;
+        }
+        drops[i]++;
+    }
+}
+setInterval(drawMatrix,50);
+
+/* ===== TYPING TITLE ===== */
+const text = "CREATE ACCOUNT";
+const title = document.getElementById("cyberTitle");
+let index = 0;
+
+function type(){
+    if(index < text.length){
+        title.innerHTML += text.charAt(index);
+        index++;
+        setTimeout(type,120);
+    } else {
+        title.innerHTML += "<span class='cursor'>|</span>";
+    }
+}
+type();
+</script>
+
+</body>
+</html>

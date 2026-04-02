@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+
+body{
+background:#020617;
+}
+
+.container{
+width:95%;
+margin:auto;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.title{
+font-size:26px;
+font-weight:600;
+color:#e2e8f0;
+}
+
+.refresh{
+padding:10px 20px;
+border:none;
+background:linear-gradient(90deg,#06b6d4,#3b82f6);
+color:white;
+border-radius:25px;
+cursor:pointer;
+font-weight:600;
+transition:0.3s;
+}
+
+.refresh:hover{
+transform:scale(1.05);
+}
+
+/* Logout Button */
+
+.logout{
+padding:10px 20px;
+border:none;
+background:linear-gradient(90deg,#ef4444,#f97316);
+color:white;
+border-radius:25px;
+cursor:pointer;
+font-weight:600;
+transition:0.3s;
+text-decoration:none;
+margin-left:10px;
+}
+
+.logout:hover{
+transform:scale(1.05);
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+background:#020617;
+color:white;
+border-radius:12px;
+overflow:hidden;
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+th,td{
+padding:18px;
+text-align:left;
+}
+
+th{
+background:#1e293b;
+font-size:14px;
+letter-spacing:0.5px;
+position:sticky;
+top:0;
+}
+
+tr{
+transition:0.2s;
+cursor:pointer;
+}
+
+tr:hover{
+background:#0f172a;
+}
+
+tr:nth-child(even){
+background:#020617;
+}
+
+.safe{
+color:#22c55e;
+font-weight:600;
+}
+
+.spam{
+color:#ef4444;
+font-weight:600;
+}
+
+.spam-row{
+background:#2b0f0f !important;
+}
+
+.progress{
+background:#1e293b;
+border-radius:20px;
+overflow:hidden;
+height:8px;
+}
+
+.progress-bar{
+height:8px;
+background:linear-gradient(90deg,#ef4444,#facc15,#22c55e);
+}
+
+.sender{
+font-size:12px;
+color:#94a3b8;
+display:block;
+margin-top:5px;
+}
+
+.badge-safe{
+background:#022c22;
+color:#22c55e;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+}
+
+.badge-spam{
+background:#3f0d0d;
+color:#ef4444;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+}
+
+/* Risk Badges */
+
+.risk-low{
+background:#022c22;
+color:#22c55e;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+}
+
+.risk-medium{
+background:#422006;
+color:#facc15;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+}
+
+.risk-high{
+background:#3f0d0d;
+color:#ef4444;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+}
+
+.auto-refresh{
+font-size:12px;
+color:#94a3b8;
+margin-top:5px;
+}
+
+/* Popup */
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:999;
+}
+
+.popup-content{
+background:#020617;
+padding:30px;
+border-radius:15px;
+width:500px;
+border:1px solid #1e293b;
+box-shadow:0 20px 40px rgba(0,0,0,0.7);
+}
+
+.close{
+float:right;
+cursor:pointer;
+font-size:18px;
+}
+
+</style>
+
+<div class="container">
+
+<div class="header">
+
+<div>
+<div class="title">📧 Automatic Email Spam Detection</div>
+<div class="auto-refresh">Auto refresh every 30 seconds</div>
+</div>
+
+<div>
+<button class="refresh" onclick="location.reload()">🔄 Refresh</button>
+<a href="/switch-gmail" class="logout">Switch Gmail</a>
+</div>
+
+</div>
+
+<table>
+
+<tr>
+<th>Email</th>
+<th>Status</th>
+<th>Risk</th>
+<th>Spam Score</th>
+</tr>
+
+{% for item in results %}
+
+<tr class="{{ 'spam-row' if item.result=='SPAM' else '' }}"
+onclick="showPopup(
+'{{ item.email }}',
+'{{ item.sender }}',
+'{{ item.result }}',
+'{{ item.risk }}',
+'{{ item.score }}'
+)">
+
+<td>
+<strong>{{ item.email }}</strong>
+<span class="sender">{{ item.sender }}</span>
+</td>
+
+<td>
+{% if item.result == "SPAM" %}
+<span class="badge-spam">SPAM</span>
+{% else %}
+<span class="badge-safe">SAFE</span>
+{% endif %}
+</td>
+
+<td>
+
+{% if item.risk == "High Risk" %}
+<span class="risk-high">High Risk</span>
+
+{% elif item.risk == "Medium Risk" %}
+<span class="risk-medium">Medium Risk</span>
+
+{% else %}
+<span class="risk-low">Low Risk</span>
+{% endif %}
+
+</td>
+
+<td>
+
+<div class="progress">
+<div class="progress-bar" style="width:{{item.score}}%"></div>
+</div>
+
+<div style="margin-top:5px">
+{{ item.score }} %
+</div>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+
+<!-- Popup -->
+
+<div class="popup" id="popup">
+
+<div class="popup-content">
+
+<span class="close" onclick="closePopup()">✖</span>
+
+<h3>Email Details</h3>
+
+<p><strong>Email:</strong> <span id="p_email"></span></p>
+
+<p><strong>Sender:</strong> <span id="p_sender"></span></p>
+
+<p><strong>Status:</strong> <span id="p_status"></span></p>
+
+<p><strong>Risk Level:</strong> <span id="p_risk"></span></p>
+
+<p><strong>Spam Score:</strong> <span id="p_score"></span></p>
+
+</div>
+
+</div>
+
+<script>
+
+function showPopup(email,sender,status,risk,score){
+
+document.getElementById("popup").style.display="flex"
+
+document.getElementById("p_email").innerText=email
+document.getElementById("p_sender").innerText=sender
+document.getElementById("p_status").innerText=status
+document.getElementById("p_risk").innerText=risk
+document.getElementById("p_score").innerText=score + " %"
+
+}
+
+function closePopup(){
+document.getElementById("popup").style.display="none"
+}
+
+setTimeout(function(){
+location.reload();
+},30000);
+
+</script>
+
+{% endblock %}
