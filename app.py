@@ -17,7 +17,7 @@ from database import init_db
 
 
 app = Flask(__name__)
-init_dp()
+init_db()
 
 app.secret_key = "SUPER_SECRET_KEY"
 app.permanent_session_lifetime = 60 * 60 * 24 * 7  # 7 days
