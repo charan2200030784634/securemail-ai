@@ -10,18 +10,29 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.readonly']
 def get_gmail_service():
     creds = None
     
-    if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # Detect environment
+    if os.path.exists('/etc/secrets/credentials.json'):
+        credentials_path = '/etc/secrets/credentials.json'
+        token_path = '/tmp/token.json'
+    else:
+        credentials_path = 'credentials.json'
+        token_path = 'token.json'
+    
+    # Load token
+    if os.path.exists(token_path):
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
         
+    # If no creds
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
-                'credentials.json', SCOPES)
+                credentials_path, SCOPES)
             creds = flow.run_local_server(port=0)
             
-        with open('token.json', 'w') as token:
+        # Save token
+        with open(token_path, 'w') as token:
             token.write(creds.to_json())
 
     service = build('gmail', 'v1', credentials=creds)
@@ -30,13 +41,21 @@ def get_gmail_service():
 
 def read_emails():
     service = get_gmail_service()
-    results = service.users().messages().list(userId='me', maxResults=10).execute()
+    
+    results = service.users().messages().list(
+        userId='me',
+        maxResults=10
+    ).execute()
+    
     messages = results.get('messages', [])
 
     emails = []
 
     for msg in messages:
-        txt = service.users().messages().get(userId='me', id=msg['id']).execute()
+        txt = service.users().messages().get(
+            userId='me',
+            id=msg['id']
+        ).execute()
 
         payload = txt['payload']
         headers = payload.get("headers")
