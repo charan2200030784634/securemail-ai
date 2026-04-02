@@ -5,6 +5,5 @@ __pycache__/
 *.csv
 *.db
 token.json
-credentials.json
 .env
 .DS_Store
