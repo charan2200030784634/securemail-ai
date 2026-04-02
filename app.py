@@ -13,8 +13,12 @@ from utils.email_domain_checker import extract_domain, is_suspicious_domain
 from utils.gmail_reader import read_emails
 from utils.spam_detector import check_spam
 
+from database import init_db
+
 
 app = Flask(__name__)
+init_dp()
+
 app.secret_key = "SUPER_SECRET_KEY"
 app.permanent_session_lifetime = 60 * 60 * 24 * 7  # 7 days
 
@@ -284,6 +288,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    import os
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
